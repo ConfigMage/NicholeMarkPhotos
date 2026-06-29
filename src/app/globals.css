@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream text-charcoal font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+  }
+
+  /* Inputs should feel soft and on-palette, never default blue. */
+  input,
+  textarea {
+    @apply outline-none;
+  }
+}
+
+@layer utilities {
+  /* CSS multi-column masonry. Tiles use break-inside-avoid + bottom margin. */
+  .masonry {
+    column-gap: 0.75rem;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
