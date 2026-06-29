@@ -123,6 +123,20 @@ npm run dev
 
 ---
 
+## Troubleshooting
+
+**Upload fails with `403 ... new row violates row-level security policy`**
+The anon key is fine — the bucket just has no policy letting the anon role
+*write* to it. This happens when the bucket was created in the dashboard but the
+**storage object policies** in [`setup.sql`](./setup.sql) (section 3) were never
+applied. Re-run section 3 of `setup.sql` in the SQL Editor (it's idempotent), or
+add the policies via **Storage → Policies → `wedding-media`** (INSERT + SELECT,
+role `anon`, definition `bucket_id = 'wedding-media'`). Takes effect immediately,
+no redeploy needed.
+
+**New uploads don't appear live** — make sure `public.uploads` is in the
+`supabase_realtime` publication (section 4 of `setup.sql`).
+
 ## Security note (please read)
 
 The **anon key is public by design** — it ships in the browser. The security

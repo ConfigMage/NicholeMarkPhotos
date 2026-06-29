@@ -54,6 +54,14 @@ create policy "anon read wedding-media"
   on storage.objects for select to anon
   using (bucket_id = 'wedding-media');
 
+-- The app sends `x-upsert: true`, which can take the UPDATE path on re-upload.
+-- Allow it so resumable uploads never 403 on a (rare) object-name collision.
+drop policy if exists "anon update wedding-media" on storage.objects;
+create policy "anon update wedding-media"
+  on storage.objects for update to anon
+  using (bucket_id = 'wedding-media')
+  with check (bucket_id = 'wedding-media');
+
 -- -----------------------------------------------------------------------------
 -- 4. Enable Realtime on public.uploads (add it to the realtime publication).
 --    Wrapped so re-running doesn't error if it's already a member.
