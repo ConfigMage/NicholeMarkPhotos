@@ -82,8 +82,9 @@ function findChrome(explicit) {
 
 /* ------------------------------------------------------------- Rendering */
 
-/** Every sheet is US Letter, which is 816 x 1056 CSS pixels at 96dpi. */
-const SHEET_CSS_PX = { width: 816, height: 1056 };
+/** Pieces are US Letter unless they say otherwise. CSS pixels run 96 to the inch. */
+const DEFAULT_SHEET = { widthIn: 8.5, heightIn: 11 };
+const CSS_PX_PER_INCH = 96;
 
 /**
  * Headless Chrome stops painting a little short of the window height, so a
@@ -161,6 +162,9 @@ async function main() {
   let warnings = 0;
 
   for (const piece of PIECES) {
+    const widthIn = piece.widthIn ?? DEFAULT_SHEET.widthIn;
+    const heightIn = piece.heightIn ?? DEFAULT_SHEET.heightIn;
+
     const html = piece.render(qr, options.url);
     const htmlPath = join(htmlDir, `${piece.slug}.html`);
     writeFileSync(htmlPath, html, "utf8");
@@ -173,7 +177,7 @@ async function main() {
       const pngPath = join(options.out, `${piece.slug}.png`);
       runChrome(chrome, [
         ...CHROME_FLAGS,
-        `--window-size=${SHEET_CSS_PX.width},${SHEET_CSS_PX.height + PREVIEW_PAD_PX}`,
+        `--window-size=${Math.round(widthIn * CSS_PX_PER_INCH)},${Math.round(heightIn * CSS_PX_PER_INCH) + PREVIEW_PAD_PX}`,
         "--force-device-scale-factor=2",
         "--hide-scrollbars",
         `--screenshot=${pngPath}`,
@@ -182,10 +186,16 @@ async function main() {
     }
 
     const boxes = pdfPageBoxes(pdfPath);
-    const pageNote =
-      boxes.length === 1 && Math.abs(boxes[0].width - 8.5) < 0.02 && Math.abs(boxes[0].height - 11) < 0.02
+    const sizeIsRight =
+      boxes.length === 1 &&
+      Math.abs(boxes[0].width - widthIn) < 0.02 &&
+      Math.abs(boxes[0].height - heightIn) < 0.02;
+    const pageNote = sizeIsRight
+      ? widthIn === DEFAULT_SHEET.widthIn && heightIn === DEFAULT_SHEET.heightIn
         ? "US Letter"
-        : `${boxes.length} page(s) at ${boxes.map((b) => `${b.width.toFixed(2)}x${b.height.toFixed(2)}in`).join(", ")}`;
+        : `${widthIn} x ${heightIn}in`
+      : `!! ${boxes.length} page(s) at ${boxes.map((b) => `${b.width.toFixed(2)}x${b.height.toFixed(2)}in`).join(", ")}`;
+    if (!sizeIsRight) warnings++;
 
     // A QR module smaller than about 0.6mm is where phone cameras start to
     // struggle, so say something rather than shipping a code nobody can scan.
@@ -206,7 +216,7 @@ async function main() {
   console.log("");
   console.log(`${readdirSync(options.out).filter((f) => f.endsWith(".pdf")).length} PDFs in ${options.out}`);
   if (warnings > 0) {
-    console.log(`${warnings} piece(s) have small QR modules — scan-test one before printing a stack.`);
+    console.log(`${warnings} piece(s) need a look before printing a stack — see the flags above.`);
   }
   console.log("Print at 100% / Actual size, not Fit to page.");
 }

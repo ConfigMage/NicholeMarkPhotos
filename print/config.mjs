@@ -68,6 +68,15 @@ export const COPY = {
     action: "to upload",
   },
 
+  /** The 4x6 card the physical tag gets stuck onto. */
+  nfcCard: {
+    headline: "Tap to share your photos",
+    hint: "place tag here",
+    instruction:
+      "Hold your phone flat against the circle until a link pops up, then open it.",
+    fallbackLabel: "Phone won&rsquo;t tap? Scan this instead.",
+  },
+
   steps: [
     { title: "Point your camera", body: "Open the Camera app and hold it over the code. Tap the link that pops up." },
     { title: "Add your photos", body: "Tap <em>Add photos &amp; videos</em> and pick as many as you like." },

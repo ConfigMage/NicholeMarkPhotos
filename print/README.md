@@ -3,8 +3,8 @@
 QR cards, signs and a troubleshooting sheet that point guests at the upload
 site, in the same palette and type as the site itself.
 
-Everything is in [`out/`](./out), ready to print. All seven are **US Letter**, so
-any home or office printer will do.
+Everything is in [`out/`](./out), ready to print. All of it is **US Letter**
+except `08`, which is a true 4 x 6in page for a photo lab.
 
 ---
 
@@ -19,6 +19,8 @@ any home or office printer will do.
 | `05-mini-tags.pdf` | 4.25 × 2.75in tags | 8 | Tucked into favours, restroom baskets, the guest book, place settings |
 | `06-guide-8.5x11.pdf` | Upload guidelines and troubleshooting | 1 | Welcome table, the bar, next to whoever is fielding questions |
 | `07-nfc-discs.pdf` | 1in punch-out discs for NFC tags, "Tap me to upload" | 35 | Stuck on the NFC tags themselves |
+| `08-nfc-card-4x6.pdf` | 4 x 6in card with a circle to stick an NFC tag onto | 1 (4 x 6in page) | One per table, tag adhered to the circle |
+| `09-nfc-card-4x6-letter.pdf` | The same card, on US Letter | 2 | Same, when printing at home |
 
 Assembly:
 
@@ -35,6 +37,15 @@ Assembly:
   inside the cut, and they have room to spare.
 
   Print these on sticker paper if you want to stick them straight onto the tags.
+
+- **`08` / `09`** — the same card, two ways to print it. `08` is a true 4 x 6in
+  page: send it to a photo lab (4 x 6 prints are cheap and come back on decent
+  stock), or drop it in a 4 x 6 frame. `09` is two of them on US Letter with cut
+  lines, for printing at home.
+
+  Stick a tag in the middle of the blush circle. The circle is 1.35in for a 1in
+  tag, so an eighth of an inch of it still shows once the tag is down and the
+  placement reads as deliberate. "Place tag here" disappears underneath.
 
 - **`01`, `06`** — print and go.
 
@@ -53,6 +64,10 @@ write the link onto each tag.
 Locking a tag stops it being overwritten later, but it is permanent. Only lock
 them once you are certain the address is final.
 
+The 4 x 6 card (`08` / `09`) carries a QR code as well, small and clearly
+secondary. A guest holding a card that does nothing has no way of knowing their
+phone is the reason, so the code is the way out.
+
 Worth knowing: **not every phone will just work.** iPhone XS and newer read tags
 in the background when unlocked; on older iPhones a guest may need the NFC Tag
 Reader in Control Centre, and Android phones need NFC switched on in settings.
@@ -69,7 +84,9 @@ else's. The disc does one job; the cards carry the scannable fallback.
 ## Printing
 
 - **Print at 100% / Actual size.** Not "Fit to page" — that shrinks the QR codes
-  and nudges the cut lines off the marks.
+  and nudges the cut lines off the marks. This matters most for `08`, whose page
+  really is 4 x 6in: printed at home without "Actual size" it will be scaled to
+  fill a Letter sheet.
 - Heavier stock (32 lb / 120 gsm or card) holds up far better on a table than
   copier paper, and the table tent needs it to stand.
 - **Matte, not glossy.** Gloss throws venue light straight back into the phone
@@ -134,7 +151,7 @@ you move to a long custom domain, check that line rather than assuming.
 | `qr.mjs` | Dependency-free QR encoder (ISO/IEC 18004, byte mode, Reed-Solomon, the eight masks) |
 | `config.mjs` | The URL and all the print copy; reads the names out of `src/lib/site.ts` |
 | `theme.mjs` | Palette, embedded fonts, shared stylesheet |
-| `pieces.mjs` | The seven layouts, sized in real inches |
+| `pieces.mjs` | The layouts, sized in real inches |
 | `generate.mjs` | Renders each piece to PDF through headless Chrome |
 
 The QR codes are **vector paths**, not images, so they stay sharp at any size a

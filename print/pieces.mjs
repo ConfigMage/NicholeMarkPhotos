@@ -685,6 +685,149 @@ export function nfcDiscSheet() {
   });
 }
 
+/* --------------------------------------------------- 8. NFC tag card 4x6 */
+
+/**
+ * The 4x6 card an NFC tag gets stuck onto, with instructions around it.
+ *
+ * The landing circle is 1.35in for a 1in tag, so an eighth of an inch of the
+ * blush target still shows once the tag is down and the placement reads as
+ * deliberate rather than approximate. "place tag here" sits inside it and
+ * disappears under the tag.
+ *
+ * It carries a QR code as well, small and clearly secondary. NFC is not
+ * universal — older iPhones need the reader in Control Centre and Android
+ * phones need it switched on — and a guest holding a card that does nothing
+ * has no way of knowing that is why. The code is the way out.
+ *
+ * @param {object} qr
+ * @param {string} url
+ * @param {{ perSheet: number, sheetWidth: number, sheetHeight: number }} layout
+ */
+function nfcCardMarkup(qr, url) {
+  return `<div class="piece">
+  <div class="frame"></div>
+  <p class="kicker">${KICKER}</p>
+  <h1 class="names">${NAMES}</h1>
+  ${dateMarkup("10pt")}
+  ${ruleMarkup("1.3in")}
+  <h2 class="headline">${COPY.nfcCard.headline}</h2>
+
+  <div class="target">
+    <p class="target-hint">${COPY.nfcCard.hint}</p>
+  </div>
+
+  <p class="instruction">${COPY.nfcCard.instruction}</p>
+
+  <div class="fallback">
+    <p class="fallback-label">${COPY.nfcCard.fallbackLabel}</p>
+    <div class="qr-panel">${qrMarkup(qr)}</div>
+    <p class="url">${urlMarkup(url)}</p>
+  </div>
+</div>`;
+}
+
+const NFC_CARD_CSS = `
+.piece {
+  --u: 1.0; --qr: 1.25in;
+  width: 4in; height: 6in;
+  padding: 0.26in 0.34in;
+  justify-content: center;
+}
+.piece .frame { inset: 0.17in; border-radius: 0.11in; }
+.piece .kicker { font-size: 6.2pt; }
+.piece .names { font-size: 28pt; margin-top: 0.06in; }
+.piece .rule { margin: 0.1in 0; }
+.piece .headline { font-size: 17pt; }
+
+/* The tag's landing zone. Sized so a 1in tag leaves the target visible. */
+.target {
+  position: relative;
+  flex: none;
+  width: 1.35in; height: 1.35in;
+  margin-top: 0.13in;
+  border-radius: 50%;
+  background: ${PALETTE.blush}8c;
+  border: 1.5px dashed ${PALETTE.rose};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.target-hint {
+  font-size: 6pt;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: ${PALETTE.roseDeep};
+}
+
+.instruction {
+  font-size: 8pt;
+  line-height: 1.5;
+  color: ${PALETTE.warmGray};
+  margin-top: 0.14in;
+  max-width: 2.8in;
+}
+
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.16in;
+  padding-top: 0.14in;
+  border-top: 1px solid ${PALETTE.rose}59;
+  width: 2.6in;
+}
+.fallback-label {
+  font-size: 7.2pt;
+  font-weight: 600;
+  color: ${PALETTE.charcoal};
+}
+.fallback .qr-panel { flex: none; margin-top: 0.09in; }
+.fallback .url { font-size: 8.4pt; margin-top: 0.09in; }
+`;
+
+/** One card on a true 4in x 6in page — what a photo lab wants. */
+export function nfcCard4x6Sheet(qr, url) {
+  return page({
+    title: `${SITE.coupleNames} — NFC tag card`,
+    width: "4in",
+    height: "6in",
+    css: PIECE_CSS + NFC_CARD_CSS,
+    body: `<div class="sheet">${nfcCardMarkup(qr, url)}</div>`,
+  });
+}
+
+/** The same card, two to a US Letter sheet, for printing at home. */
+export function nfcCardLetterSheet(qr, url) {
+  const card = nfcCardMarkup(qr, url);
+  // Two 4in cards side by side leave a quarter inch of margin either side.
+  const top = (11 - 6) / 2;
+  const left = (8.5 - 2 * 4) / 2;
+
+  const css = `
+${NFC_CARD_CSS}
+.slot { position: absolute; width: 4in; height: 6in; }
+`;
+
+  return page({
+    title: `${SITE.coupleNames} — NFC tag cards, 2 per sheet`,
+    width: "8.5in",
+    height: "11in",
+    css: PIECE_CSS + css,
+    body: `<div class="sheet">
+  <div class="slot" style="top:${top}in;left:${left}in">${card}</div>
+  <div class="slot" style="top:${top}in;left:${left + 4}in">${card}</div>
+  <div class="cut-line v" style="left:${left}in;top:${top}in;bottom:${top}in"></div>
+  <div class="cut-line v" style="left:${left + 4}in;top:${top}in;bottom:${top}in"></div>
+  <div class="cut-line v" style="left:${left + 8}in;top:${top}in;bottom:${top}in"></div>
+  <div class="cut-line h" style="top:${top}in;left:${left}in;right:${left}in"></div>
+  <div class="cut-line h" style="top:${top + 6}in;left:${left}in;right:${left}in"></div>
+</div>`,
+  });
+}
+
 /** Everything in the set, in the order the files are numbered. */
 export const PIECES = [
   // `qrInches` is the printed edge of the QR square (including its quiet zone).
@@ -698,6 +841,10 @@ export const PIECES = [
   { slug: "06-guide-8.5x11", label: "Upload guide & troubleshooting (1 per sheet)", qrInches: 1.6, render: guideSheet },
   // No QR: see nfcDiscSheet() for why a code this small would be a liability.
   { slug: "07-nfc-discs", label: "1in NFC tag discs (35 per sheet)", qrInches: null, render: nfcDiscSheet },
+  { slug: "08-nfc-card-4x6", label: "NFC tag card, 4 x 6in page (1 per page)", qrInches: 1.25,
+    widthIn: 4, heightIn: 6, render: nfcCard4x6Sheet },
+  { slug: "09-nfc-card-4x6-letter", label: "NFC tag card, 4 x 6in (2 per US Letter sheet)", qrInches: 1.25,
+    render: nfcCardLetterSheet },
 ];
 
 /** Quiet zone in modules, matching the default passed to qrToSvg(). */

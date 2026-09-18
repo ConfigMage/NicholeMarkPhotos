@@ -100,9 +100,9 @@ npm run dev
 ## 5. Print the QR codes for the venue
 
 Ready-to-print PDFs live in [`print/out/`](./print/out) — a full-page sign, a
-fold-in-half table tent, three card sizes, a sheet of 1in "Tap me to upload"
-discs for NFC tags, and a one-page upload guide with troubleshooting, all in the
-site's palette and type.
+fold-in-half table tent, three card sizes, a 4 x 6in card to stick an NFC tag
+onto, a sheet of 1in "Tap me to upload" discs for the tags themselves, and a
+one-page upload guide with troubleshooting, all in the site's palette and type.
 
 ```bash
 npm run print                                     # rebuild with the current URL
