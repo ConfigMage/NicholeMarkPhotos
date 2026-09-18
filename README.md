@@ -92,8 +92,27 @@ npm run dev
 2. **Import the project** at [vercel.com/new](https://vercel.com/new) — it
    auto-detects Next.js; no build settings to change.
 3. Add the two environment variables (above).
-4. Deploy. Make a QR code that points at the deployed URL and print it for the
-   tables.
+4. Deploy. Then generate the venue print set (step 5) so the QR codes point at
+   the deployed URL.
+
+---
+
+## 5. Print the QR codes for the venue
+
+Ready-to-print PDFs live in [`print/out/`](./print/out) — a full-page sign, a
+fold-in-half table tent, three card sizes, and a one-page upload guide with
+troubleshooting, all in the site's palette and type.
+
+```bash
+npm run print                                     # rebuild with the current URL
+node print/generate.mjs https://your-domain.com   # or point them somewhere else
+```
+
+No `npm install` is needed for this; it only wants Node and a Chrome/Chromium
+install. See [`print/README.md`](./print/README.md) for what each piece is for,
+how to cut and fold them, and printing settings.
+
+> Print one sheet and scan it with a real phone before printing a stack.
 
 ---
 

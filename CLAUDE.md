@@ -32,6 +32,12 @@ src/app/page.tsx              Composes Header + Upload + Gallery; shows ConfigNo
 src/components/UploadSection.tsx  Name input, picker/drop-zone, concurrency-3 queue, progress.
 src/components/Gallery.tsx        Keyset pagination + Realtime INSERT subscription + masonry tiles.
 src/components/Lightbox.tsx       Full-res / video, name, download, swipe + arrow-key nav.
+print/qr.mjs                   Dependency-free QR encoder (byte mode, RS ECC, masking).
+print/config.mjs               EDIT ME: the URL the codes point at + all print copy.
+print/theme.mjs                Print palette/type, mirrored from tailwind.config.ts.
+print/pieces.mjs               The six venue layouts, sized in real inches.
+print/generate.mjs             Renders each piece to PDF via headless Chrome.
+print/out/*.pdf                Generated, committed. `npm run print` rebuilds them.
 ```
 
 ## Key decisions
@@ -47,6 +53,13 @@ src/components/Lightbox.tsx       Full-res / video, name, download, swipe + arro
   videos without a poster render a play-icon placeholder tile.
 - **Couple names / date / tagline live in `src/lib/site.ts`** — change them there.
   `SITE.date` is empty by default; set it (e.g. "September 12, 2026") to show it.
+- **The print set has no npm dependencies** and must stay that way — the couple
+  needs to regenerate these PDFs on any laptop, years later, without a registry.
+  `print/config.mjs` reads the names out of `src/lib/site.ts` (regex, with a
+  loud fallback) so the cards and the site can't drift apart.
+- **Printed QR codes are pure black on white with a 4-module quiet zone.** Don't
+  tint them, don't put them on the cream background, don't shrink the quiet
+  zone — each of those costs scan reliability in dim venue light.
 
 ## Env / run / deploy
 - Local: `cp .env.local.example .env.local`, fill 2 vars, `npm install`, `npm run dev`.

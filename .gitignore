@@ -29,3 +29,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# print previews (node print/generate.mjs --png) — the PDFs are the deliverable
+/print/out/*.png
+/print/out/html/
