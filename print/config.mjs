@@ -58,6 +58,16 @@ export const COPY = {
   subhead: "Scan the code with your phone camera.",
   reassurance: "No app. No sign-in. Just your camera.",
 
+  /**
+   * The 1in NFC disc. Every word here has to earn its place at that size.
+   * Read across the rule it says "Tap me to upload". A longer second line
+   * runs into the ring, where the circle has already started to narrow.
+   */
+  nfc: {
+    tap: "Tap me",
+    action: "to upload",
+  },
+
   steps: [
     { title: "Point your camera", body: "Open the Camera app and hold it over the code. Tap the link that pops up." },
     { title: "Add your photos", body: "Tap <em>Add photos &amp; videos</em> and pick as many as you like." },

@@ -3,7 +3,7 @@
 QR cards, signs and a troubleshooting sheet that point guests at the upload
 site, in the same palette and type as the site itself.
 
-Everything is in [`out/`](./out), ready to print. All six are **US Letter**, so
+Everything is in [`out/`](./out), ready to print. All seven are **US Letter**, so
 any home or office printer will do.
 
 ---
@@ -18,6 +18,7 @@ any home or office printer will do.
 | `04-cards-quarter-page.pdf` | 4.25 × 5.5in cards | 4 | One per dinner table, next to the centrepiece |
 | `05-mini-tags.pdf` | 4.25 × 2.75in tags | 8 | Tucked into favours, restroom baskets, the guest book, place settings |
 | `06-guide-8.5x11.pdf` | Upload guidelines and troubleshooting | 1 | Welcome table, the bar, next to whoever is fielding questions |
+| `07-nfc-discs.pdf` | 1in punch-out discs for NFC tags, "Tap me to upload" | 35 | Stuck on the NFC tags themselves |
 
 Assembly:
 
@@ -26,7 +27,42 @@ Assembly:
   it is folded. No cutting.
 - **`03`, `04`, `05`** — cut along the hairlines. Each card has its own inset
   frame set well inside the trim, so a slightly crooked cut still looks right.
+- **`07-nfc-discs`** — punch out with a 1in circle punch, following the faint
+  dashed guide. Punch *just inside* the guide and it leaves with the offcut.
+  The discs sit on the same cream as the rest of the sheet, so there is no
+  printed edge to line up against: a punch that lands a little off-centre has
+  nothing to give it away. Only the rose ring and the words have to end up
+  inside the cut, and they have room to spare.
+
+  Print these on sticker paper if you want to stick them straight onto the tags.
+
 - **`01`, `06`** — print and go.
+
+---
+
+## The NFC tags
+
+The disc is **just a label**. It does not program anything — you still have to
+write the link onto each tag.
+
+1. Install a tag-writing app (NFC Tools is free on both iOS and Android).
+2. Choose **Write** → **Add a record** → **URL/URI**.
+3. Paste `https://nichole-mark-photos.vercel.app` and write it to the tag.
+4. Tap it with a different phone to confirm before you do the rest.
+
+Locking a tag stops it being overwritten later, but it is permanent. Only lock
+them once you are certain the address is final.
+
+Worth knowing: **not every phone will just work.** iPhone XS and newer read tags
+in the background when unlocked; on older iPhones a guest may need the NFC Tag
+Reader in Control Centre, and Android phones need NFC switched on in settings.
+That is the reason to keep the QR cards on the same tables rather than going
+NFC-only — between the two, everybody has a way in.
+
+There is deliberately **no QR code on the disc**. At 1in, a code for this URL
+falls to roughly 0.6mm per module with no room left for a quiet zone, which is
+the kind of code that scans on the phone it was tested with and on nobody
+else's. The disc does one job; the cards carry the scannable fallback.
 
 ---
 
@@ -98,7 +134,7 @@ you move to a long custom domain, check that line rather than assuming.
 | `qr.mjs` | Dependency-free QR encoder (ISO/IEC 18004, byte mode, Reed-Solomon, the eight masks) |
 | `config.mjs` | The URL and all the print copy; reads the names out of `src/lib/site.ts` |
 | `theme.mjs` | Palette, embedded fonts, shared stylesheet |
-| `pieces.mjs` | The six layouts, sized in real inches |
+| `pieces.mjs` | The seven layouts, sized in real inches |
 | `generate.mjs` | Renders each piece to PDF through headless Chrome |
 
 The QR codes are **vector paths**, not images, so they stay sharp at any size a

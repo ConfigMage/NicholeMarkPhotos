@@ -558,6 +558,133 @@ export function guideSheet(qr, url) {
   });
 }
 
+/* ------------------------------------------------------- 7. NFC discs */
+
+/**
+ * A "tap" mark: a fingertip and three radiating arcs.
+ *
+ * Deliberately not the NFC Forum N-Mark, which is a trademark with its own
+ * usage terms. A contactless-style wave reads the same to a guest and carries
+ * no strings.
+ */
+function tapIcon() {
+  return `<svg class="tap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+    <circle cx="6.5" cy="12" r="2.4" fill="currentColor" stroke="none"/>
+    <path d="M12 8a5.6 5.6 0 0 1 0 8"/>
+    <path d="M15.6 5a10.4 10.4 0 0 1 0 14"/>
+    <path d="M19.2 2a15.2 15.2 0 0 1 0 20"/>
+  </svg>`;
+}
+
+/**
+ * Punch-out labels for 1in NFC discs, 35 to a sheet.
+ *
+ * No QR code here on purpose. At 1in a code for this URL would fall to roughly
+ * 0.6mm per module with no room for a quiet zone, which is exactly the sort of
+ * code that works on the designer's phone and on nobody else's. The disc does
+ * one job, and the cards carry the scannable fallback.
+ *
+ * The disc sits on the same cream as the sheet, so there is no printed edge to
+ * misalign: punch it a little off-centre and there is still nothing to give it
+ * away. Only the inner ring and the type have to land inside the cut.
+ */
+export function nfcDiscSheet() {
+  const COLUMNS = 5;
+  const ROWS = 7;
+  const PITCH = 1.3; // inches between disc centres, leaving room for a punch
+  const left = (8.5 - COLUMNS * PITCH) / 2;
+  const top = (11 - ROWS * PITCH) / 2;
+
+  const disc = `<div class="disc">
+    <span class="ring"></span>
+    <span class="cut"></span>
+    ${tapIcon()}
+    <p class="tap-word">${escapeHtml(COPY.nfc.tap)}</p>
+    ${ruleMarkup("0.42in")}
+    <p class="tap-action">${escapeHtml(COPY.nfc.action)}</p>
+  </div>`;
+
+  const slots = [];
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLUMNS; col++) {
+      slots.push(
+        `<div class="slot" style="top:${(top + row * PITCH).toFixed(3)}in;left:${(left + col * PITCH).toFixed(3)}in">${disc}</div>`,
+      );
+    }
+  }
+
+  const css = `
+.slot {
+  position: absolute;
+  width: ${PITCH}in; height: ${PITCH}in;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.disc {
+  position: relative;
+  width: 1.12in; height: 1.12in;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+
+/* The design's visible edge. Kept well inside the cut so a wobbly punch
+   never clips it. */
+.ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0.82in; height: 0.82in;
+  margin: -0.41in 0 0 -0.41in;
+  border: 1px solid ${PALETTE.rose}73;
+  border-radius: 50%;
+}
+
+/* Punch guide at exactly 1in. Faint on purpose — punch just inside it and
+   it disappears with the offcut. */
+.cut {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 1in; height: 1in;
+  margin: -0.5in 0 0 -0.5in;
+  border: 0.5px dashed ${PALETTE.rose}4d;
+  border-radius: 50%;
+}
+
+.tap-icon {
+  width: 0.185in; height: 0.185in;
+  color: ${PALETTE.sageDeep};
+  margin-bottom: 0.035in;
+}
+
+.tap-word {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 15pt;
+  font-weight: 600;
+  line-height: 1;
+  color: ${PALETTE.charcoal};
+}
+
+.disc .rule { margin: 0.045in 0; }
+
+.tap-action {
+  font-size: 6pt;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: ${PALETTE.warmGray};
+  white-space: nowrap;
+}
+`;
+
+  return page({
+    title: `${SITE.coupleNames} — NFC tag discs`,
+    width: "8.5in",
+    height: "11in",
+    css: PIECE_CSS + css,
+    body: `<div class="sheet">${slots.join("")}</div>`,
+  });
+}
+
 /** Everything in the set, in the order the files are numbered. */
 export const PIECES = [
   // `qrInches` is the printed edge of the QR square (including its quiet zone).
@@ -569,6 +696,8 @@ export const PIECES = [
   { slug: "04-cards-quarter-page", label: "Quarter-page cards, 4.25 x 5.5in (4 per sheet)", qrInches: 1.75, render: quarterPageSheet },
   { slug: "05-mini-tags", label: "Mini tags, 4.25 x 2.75in (8 per sheet)", qrInches: 1.4, render: miniTagSheet },
   { slug: "06-guide-8.5x11", label: "Upload guide & troubleshooting (1 per sheet)", qrInches: 1.6, render: guideSheet },
+  // No QR: see nfcDiscSheet() for why a code this small would be a liability.
+  { slug: "07-nfc-discs", label: "1in NFC tag discs (35 per sheet)", qrInches: null, render: nfcDiscSheet },
 ];
 
 /** Quiet zone in modules, matching the default passed to qrToSvg(). */

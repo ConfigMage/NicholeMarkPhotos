@@ -181,22 +181,24 @@ async function main() {
       ]);
     }
 
-    // A QR module smaller than about 0.6mm is where phone cameras start to
-    // struggle, so say something rather than shipping a code nobody can scan.
-    const moduleMm = (piece.qrInches / unitsAcross) * 25.4;
     const boxes = pdfPageBoxes(pdfPath);
     const pageNote =
       boxes.length === 1 && Math.abs(boxes[0].width - 8.5) < 0.02 && Math.abs(boxes[0].height - 11) < 0.02
         ? "US Letter"
         : `${boxes.length} page(s) at ${boxes.map((b) => `${b.width.toFixed(2)}x${b.height.toFixed(2)}in`).join(", ")}`;
 
-    const flag = moduleMm < 0.6 ? "  <-- QR modules are very small, check a test scan" : "";
-    if (moduleMm < 0.6) warnings++;
+    // A QR module smaller than about 0.6mm is where phone cameras start to
+    // struggle, so say something rather than shipping a code nobody can scan.
+    let qrNote = "no QR (tap only)";
+    if (piece.qrInches !== null) {
+      const moduleMm = (piece.qrInches / unitsAcross) * 25.4;
+      if (moduleMm < 0.6) warnings++;
+      qrNote =
+        `QR ${piece.qrInches}in (${moduleMm.toFixed(2)}mm per module)` +
+        (moduleMm < 0.6 ? "  <-- QR modules are very small, check a test scan" : "");
+    }
 
-    console.log(
-      `${piece.slug}.pdf`.padEnd(30) +
-        `${pageNote.padEnd(12)} QR ${piece.qrInches}in (${moduleMm.toFixed(2)}mm per module)${flag}`,
-    );
+    console.log(`${piece.slug}.pdf`.padEnd(30) + `${pageNote.padEnd(12)} ${qrNote}`);
   }
 
   if (!options.keepHtml) rmSync(htmlDir, { recursive: true, force: true });
